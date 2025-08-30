@@ -138,6 +138,13 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        for(int i = 0;i < b.size();i++) {
+            for(int j = 0;j < b.size();j++) {
+                if(b.tile(j, i) == null) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -148,6 +155,13 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        for(int i = 0;i < b.size();++i) {
+            for(int j = 0;j < b.size();++j) {
+                if (b.tile(i, j) != null && b.tile(i, j).value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -159,6 +173,28 @@ public class Model extends Observable {
      */
     public static boolean atLeastOneMoveExists(Board b) {
         // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        int[][] dir = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};  //定义上下左右方向数组
+        for(int i = 0;i < b.size();++i) {
+            for(int j = 0;j < b.size();++j) {
+                Tile t = b.tile(i, j);
+                int var1 = t.value();
+                for(int k = 0;k < 4;++k) {
+                    //先判断数组索引是否越界
+                    if(i + dir[k][0] >= b.size() || i + dir[k][0] < 0
+                            || j + dir[k][1] < 0 || j + dir[k][1] >= b.size()) {
+                        break;
+                    }
+                    Tile nt = b.tile(i + dir[k][0], j + dir[k][1]);
+                    int var2 = nt.value();
+                    if(var1 == var2) {
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
