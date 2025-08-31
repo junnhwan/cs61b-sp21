@@ -32,19 +32,20 @@ class GUISource implements InputSource {
 
     @Override
     /** Return and log which direction arrow was pressed. */
+    //GUISource这里要改成其他按键（如WASD，上下左右无法生效）
     public String getKey() {
         String command = _source.readKey();
         switch (command) {
-            case "↑" :
+            case "W" :
                 command = "Up";
                 break;
-            case "→" :
+            case "D" :
                 command = "Right";
                 break;
-            case "↓" :
+            case "S" :
                 command = "Down";
                 break;
-            case "←" :
+            case "A" :
                 command = "Left";
                 break;
             default :
