@@ -2,6 +2,7 @@ package game2048;
 
 import java.util.Formatter;
 import java.util.Observable;
+import java.util.Scanner;
 
 
 /** The state of a game of 2048.
@@ -114,12 +115,73 @@ public class Model extends Observable {
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
 
+        changed = atLeastOneMoveExists(board);
+        moveByDirections(side);
+
         checkGameOver();
         if (changed) {
             setChanged();
         }
         return changed;
     }
+
+    /**
+     * Three helper methods for the Task-tilt
+     */
+    private void moveSingleCol(int col) {
+        boolean[] merged = new boolean[board.size()];
+        for(int row = board.size() - 2;row >= 0;--row) {
+            if(board.tile(col, row) != null) {
+                Tile t = board.tile(col, row);
+
+                int dx = 0;
+                while(row + dx + 1 < board.size() && board.tile(col,row + dx + 1) == null) {
+                    dx++;
+                }
+
+                // 第一个条件这里用了很久时间找出Bug，因为上面找偏移量的时候有可能偏移到最顶行，
+                // 所以要先判断偏移后的顶上一格是否已经越界了，不然会报越界异常
+                if(row + dx + 1 < board.size() && board.tile(col, row + dx + 1) != null &&
+                        board.tile(col, row + dx + 1).value() == t.value()
+                        && !merged[row + dx + 1]) {
+                    //注意这里要先加总分值再移动tile，不然会报空值异常
+                    this.score += 2 * board.tile(col, row).value();
+                    board.move(col, row + dx + 1, t);
+                    merged[row + dx + 1] = true;
+                } else {
+                    board.move(col, row + dx, t);
+                }
+            }
+        }
+    }
+
+    private void moveAllCols() {
+        for(int col = 0;col < board.size();++col) {
+            moveSingleCol(col);
+        }
+    }
+
+    private void moveByDirections(Side side) {
+        switch (side) {
+            case NORTH -> moveAllCols();
+            case SOUTH -> {
+                board.setViewingPerspective(Side.SOUTH);
+                moveAllCols();
+                board.setViewingPerspective(Side.NORTH);
+            }
+            case WEST -> {
+                board.setViewingPerspective(Side.WEST);
+                moveAllCols();
+                board.setViewingPerspective(Side.NORTH);
+            }
+            case EAST -> {
+                board.setViewingPerspective(Side.EAST);
+                moveAllCols();
+                board.setViewingPerspective(Side.NORTH);
+            }
+        }
+    }
+
 
     /** Checks if the game is over and sets the gameOver variable
      *  appropriately.
