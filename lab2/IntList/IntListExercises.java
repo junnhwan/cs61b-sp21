@@ -10,7 +10,7 @@ public class IntListExercises {
      */
     public static void addConstant(IntList lst, int c) {
         IntList head = lst;
-        while (head.rest != null) {
+        while (head != null) {
             head.first += c;
             head = head.rest;
         }
@@ -51,7 +51,7 @@ public class IntListExercises {
      */
     public static boolean firstDigitEqualsLastDigit(int x) {
         int lastDigit = x % 10;
-        while (x > 10) {
+        while (x >= 10) {
             x = x / 10;
         }
         int firstDigit = x % 10;
@@ -72,11 +72,21 @@ public class IntListExercises {
         }
 
         boolean currElemIsPrime = Primes.isPrime(lst.first);
+        //改法二：
+        boolean updated = false;
 
         if (currElemIsPrime) {
             lst.first *= lst.first;
+            // 这里Bug的原因就是: 当确认是质数时函数直接在后面把true返回了，但剩下的元素还没判断并变动
+            // 所以，就算确认是质数了，还是要继续递归，把剩下的数判断完了
+            // 改法一：
+            //squarePrimes(lst.rest);
+            updated = true;   //写法二
         }
 
-        return currElemIsPrime || squarePrimes(lst.rest);
+        boolean restUpdated = squarePrimes(lst.rest);
+
+        //return currElemIsPrime || squarePrimes(lst.rest);   //写法一
+        return updated || restUpdated;  //写法二
     }
 }
