@@ -3,37 +3,38 @@ package deque;
 public class LinkedListDeque<T> {
 
     //内部类:单个节点
-    public static class Node<T> {
-        public Node<T> prev;
+    private class Node {
+        public Node prev;
         public T item;
-        public Node<T> next;
-        public Node(Node<T> p, T i, Node<T> n) {
+        public Node next;
+        public Node(Node p, T i, Node n) {
             prev = p;
             item = i;
             next = n;
         }
     }
 
-    private Node<T> sentinel;  //哨兵节点
+    private Node sentinel;  //哨兵节点
     private int size;  //队列大小
 
     //构造函数(构造空队列)
     public LinkedListDeque() {
-        sentinel = new Node<>(null, null, null);
+        //这里不能初始化的时候直接用sentinel，因为sentinel还没被初始化，要先全部赋值为null，在设置其前驱与后继
+        sentinel = new Node(null, null, null);
         sentinel.next = sentinel;
         sentinel.prev = sentinel;
         size = 0;
     }
 
     public void addFirst(T item) {
-        Node<T> newNode = new Node<>(sentinel, item, sentinel.next);
+        Node newNode = new Node(sentinel, item, sentinel.next);
         sentinel.next.prev = newNode;
         sentinel.next = newNode;
         size += 1;  //记得要把 size + 1
     }
 
     public void addLast(T item) {
-        Node<T> newNode = new Node<>(sentinel.prev, item, sentinel);
+        Node newNode = new Node(sentinel.prev, item, sentinel);
         sentinel.prev.next = newNode;
         sentinel.prev = newNode;
         size += 1;  //记得要把 size + 1
@@ -43,7 +44,7 @@ public class LinkedListDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        Node<T> first = sentinel.next;
+        Node first = sentinel.next;
         T removeItem = first.item;
         sentinel.next = first.next;
         first.next.prev = sentinel;
@@ -58,7 +59,7 @@ public class LinkedListDeque<T> {
         if (isEmpty()) {
             return null;
         }
-        Node<T> last = sentinel.prev;
+        Node last = sentinel.prev;
         T removeItem = last.item;
         sentinel.prev = last.prev;
         last.prev.next = sentinel;
@@ -73,7 +74,7 @@ public class LinkedListDeque<T> {
         if (index < 0 || index >= size) {
             return null;
         }
-        Node<T> curr = sentinel.next;
+        Node curr = sentinel.next;
         for(int i = 0;i < index;i++) {
             curr = curr.next;
         }
@@ -87,7 +88,7 @@ public class LinkedListDeque<T> {
         return getRecursiveHelper(sentinel.next, index);
     }
 
-    public T getRecursiveHelper(Node<T> curr, int n) {
+    public T getRecursiveHelper(Node curr, int n) {
         if(n == 0) {
             return curr.item;
         }
@@ -101,11 +102,11 @@ public class LinkedListDeque<T> {
     public boolean isEmpty() {return size == 0;}
 
     public void printDeque() {
-        Node<T> curr = sentinel.next;
-        while(curr != sentinel) {
+        Node curr = sentinel.next;
+        for(int i = 0;i < size - 1;++i) {
             System.out.print(curr.item + " ");
             curr = curr.next;
         }
-        System.out.println();
+        System.out.print(curr.item);
     }
 }
