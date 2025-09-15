@@ -88,4 +88,3 @@ public class LinkedListDeque<T> {
         return getRecursive(pos+1,index,x.next);
     }
 }
-
